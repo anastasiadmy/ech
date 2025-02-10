@@ -1,183 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardiac Calculators</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            flex-wrap: wrap; /* Allows wrapping for smaller screens */
-            justify-content: space-around; /* Distributes space around calculators */
-        }
-        .calculator {
-            border: 1px solid #ccc;
-            padding: 20px;
-            margin: 10px;
-            width: 300px; /* Adjust width as needed */
-            box-sizing: border-box; /* Ensures padding is included in width */
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 8px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        #results {
-            margin-top: 20px;
-        }
+<title>Cardiac Calculators</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+.calculator {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+input[type="number"] {
+  width: 100%; /* Make input fields responsive */
+  padding: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box; /* Include padding in width */
+}
+button {
+  padding: 8px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#results {
+  margin-top: 20px;
+}
 
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .calculator {
-                width: 90%; /* Occupy most of the screen on small devices */
-                margin: 10px auto; /* Center the calculators */
-            }
-        }
-    </style>
+/* Responsive Styles */
+@media (min-width: 768px) { /* Adjust breakpoint as needed */
+  .calculator {
+    width: 50%; /* Make calculators wider on larger screens */
+    float: left; /* Arrange calculators side by side */
+    margin-right: 20px;
+  }
+  input[type="number"] {
+      width: 150px;
+  }
+}
+</style>
 </head>
 <body>
 
-    <div class="calculator">
-        <h2>BSA Calculator</h2>
-        <label for="height">Height (cm):</label>
-        <input type="number" id="height" value="0">
-        <label for="weight">Weight (kg):</label>
-        <input type="number" id="weight" value="0">
-        <button onclick="calculateBSA()">Calculate BSA</button>
-        <div id="bsaResults">
-            <p>BSA (m²): <span id="bsa"></span></p>
-        </div>
-    </div>
+<h1>Cardiac Calculators</h1>
 
-    <div class="calculator">
-        <h2>LV Mass/RWT Calculator</h2>
-        <label for="ivs">IVS (mm):</label>
-        <input type="number" id="ivs" value="0">
-        <label for="lvedd2">LVEDD (mm):</label>
-        <input type="number" id="lvedd2" value="0">
-        <label for="pw">PW (mm):</label>
-        <input type="number" id="pw" value="0">
-        <button onclick="calculateLV()">Calculate LV</button>
-        <div id="lvResults">
-            <p>LV Mass (g): <span id="lvMass"></span></p>
-            <p>LV Mass Index (g/m²): <span id="lvMassIndex"></span></p>
-            <p>RWT: <span id="rwt"></span></p>
-        </div>
-    </div>
+<div class="calculator">
+  <h2>BSA Calculator</h2>
+  <label for="height">Height (cm):</label>
+  <input type="number" id="height" value="0">
+  <label for="weight">Weight (kg):</label>
+  <input type="number" id="weight" value="0">
+  <p>BSA (m²): <span id="bsa"></span></p>
+</div>
 
-    <div class="calculator">
-        <h2>Teichholz EF/EDV/ESV</h2>
-        <label for="lvedd_t">LVEDD (mm):</label>
-        <input type="number" id="lvedd_t" value="0">
-        <label for="lvesd_t">LVESD (mm):</label>
-        <input type="number" id="lvesd_t" value="0">
-        <button onclick="calculateTeichholz()">Calculate</button>
-        <div id="teichholzResults">
-          <p>EDV (ml): <span id="edv"></span></p>
-          <p>ESV (ml): <span id="esv"></span></p>
-          <p>EF (%): <span id="tef"></span></p>
-        </div>
-    </div>
+<div class="calculator">
+  <h2>LV Mass & RWT Calculator</h2>
+  <label for="ivs">IVS (mm):</label>
+  <input type="number" id="ivs" value="0">
+  <label for="lvedd_lv">LVEDD (mm):</label>
+  <input type="number" id="lvedd_lv" value="0">
+  <label for="pw">PW (mm):</label>
+  <input type="number" id="pw" value="0">
+  <p>LV Mass (g): <span id="lvmass"></span></p>
+  <p>LV Mass Index (g/m²): <span id="lvmassindex"></span></p>
+  <p>RWT: <span id="rwt"></span></p>
+</div>
 
-    <div class="calculator">
-        <h2>LAVI Calculator</h2>
-        <label for="laVolume">LA Volume (ml):</label>
-        <input type="number" id="laVolume" value="0">
-        <label for="bsa_lavi">BSA (m²):</label>
-        <input type="number" id="bsa_lavi" value="0">
-        <button onclick="calculateLAVI()">Calculate LAVI</button>
-        <div id="laviResults">
-            <p>LAVI (ml/m²): <span id="lavi"></span></p>
-        </div>
-    </div>
+<div class="calculator">
+  <h2>ESV, EDV, EF (Teichholz)</h2>
+  <label for="lvedd_teich">LVEDD (mm):</label>
+  <input type="number" id="lvedd_teich" value="0">
+  <label for="lvesd_teich">LVESD (mm):</label>
+  <input type="number" id="lvesd_teich" value="0">
+  <p>EDV (ml): <span id="edv"></span></p>
+  <p>ESV (ml): <span id="esv_teich"></span></p>
+  <p>EF (%): <span id="ef_teich"></span></p>
+</div>
+
+<div class="calculator">
+    <h2>LAVI Calculator</h2>
+    <label for="la_volume">LA Volume (ml):</label>
+    <input type="number" id="la_volume" value="0">
+    <p>LAVI (ml/m²): <span id="lavi"></span></p>
+</div>
 
 
-    <script>
+<button onclick="calculateAll()">Calculate All</button>
 
-        function calculateBSA() {
-          const height = parseFloat(document.getElementById("height").value);
-          const weight = parseFloat(document.getElementById("weight").value);
+<script>
+function calculateBSA() {
+  const height = parseFloat(document.getElementById("height").value);
+  const weight = parseFloat(document.getElementById("weight").value);
+  if (isNaN(height) || isNaN(weight)) return; // Don't calculate if inputs are invalid.
+  const bsa = Math.sqrt((height * weight) / 3600); // Mosteller formula
+  document.getElementById("bsa").textContent = bsa.toFixed(2);
+  return bsa; // Return the calculated BSA
+}
 
-          if (isNaN(height) || isNaN(weight)) {
-            alert("Please enter valid numbers for height and weight.");
-            return;
-          }
-          // Mosteller Formula
-          const bsa = Math.sqrt((height * weight) / 3600);
-          document.getElementById("bsa").textContent = bsa.toFixed(2);
-        }
+function calculateLVMassAndRWT() {
+  const ivs = parseFloat(document.getElementById("ivs").value);
+  const lvedd = parseFloat(document.getElementById("lvedd_lv").value);
+  const pw = parseFloat(document.getElementById("pw").value);
+  if (isNaN(ivs) || isNaN(lvedd) || isNaN(pw)) return;
 
-        function calculateLV() {
-            const ivs = parseFloat(document.getElementById("ivs").value);
-            const lvedd = parseFloat(document.getElementById("lvedd2").value);
-            const pw = parseFloat(document.getElementById("pw").value);
+  const lvmass = 0.8 * 1.04 * ((ivs + lvedd + pw)**3 - lvedd**3);
+  const lvmassindex = lvmass / calculateBSA(); // Use calculated BSA
+  const rwt = (2 * pw) / lvedd;
 
-            if (isNaN(ivs) || isNaN(lvedd) || isNaN(pw)) {
-                alert("Please enter valid numbers for IVS, LVEDD, and PW.");
-                return;
-            }
+  document.getElementById("lvmass").textContent = lvmass.toFixed(2);
+  document.getElementById("lvmassindex").textContent = lvmassindex ? lvmassindex.toFixed(2) : ""; // Handle potential division by zero
+  document.getElementById("rwt").textContent = rwt.toFixed(2);
+}
 
-            const lvMass = 0.8 * 1.04 * ((ivs + lvedd + pw)**3 - lvedd**3);
-            const bsa = parseFloat(document.getElementById("bsa").textContent); // Get BSA from BSA calculator
+function calculateTeichholz() {
+    const lvedd = parseFloat(document.getElementById("lvedd_teich").value);
+    const lvesd = parseFloat(document.getElementById("lvesd_teich").value);
+    if (isNaN(lvedd) || isNaN(lvesd)) return;
 
-            if (isNaN(bsa)) {
-                alert("Please calculate BSA first.");
-                return;
-            }
+    const edv = (7.0 / (2.4 + lvedd)) * lvedd * lvedd * lvedd;
+    const esv = (7.0 / (2.4 + lvesd)) * lvesd * lvesd * lvesd;
+    const ef = ((edv - esv) / edv) * 100;
 
-            const lvMassIndex = lvMass / bsa;
-            const rwt = (2 * pw) / lvedd;
+    document.getElementById("edv").textContent = edv.toFixed(2);
+    document.getElementById("esv_teich").textContent = esv.toFixed(2);
+    document.getElementById("ef_teich").textContent = ef.toFixed(2);
+}
 
-            document.getElementById("lvMass").textContent = lvMass.toFixed(2);
-            document.getElementById("lvMassIndex").textContent = lvMassIndex.toFixed(2);
-            document.getElementById("rwt").textContent = rwt.toFixed(2);
-        }
+function calculateLAVI() {
+    const laVolume = parseFloat(document.getElementById("la_volume").value);
+    const bsa = calculateBSA(); // Use the calculated BSA
+    if (isNaN(laVolume) || !bsa) return;
 
-        function calculateTeichholz() {
-            const lvedd = parseFloat(document.getElementById("lvedd_t").value);
-            const lvesd = parseFloat(document.getElementById("lvesd_t").value);
+    const lavi = laVolume / bsa;
+    document.getElementById("lavi").textContent = lavi.toFixed(2);
+}
 
-            if (isNaN(lvedd) || isNaN(lvesd)) {
-              alert("Please enter valid numbers for LVEDD and LVESD.");
-              return;
-            }
 
-            const edv = (7.0 / (2.4 + lvedd)) * (lvedd * lvedd * lvedd);
-            const esv = (7.0 / (2.4 + lvesd)) * (lvesd * lvesd * lvesd);
-            const ef = ((edv - esv) / edv) * 100;
-
-            document.getElementById("edv").textContent = edv.toFixed(2);
-            document.getElementById("esv").textContent = esv.toFixed(2);
-            document.getElementById("tef").textContent = ef.toFixed(2);
-          }
-
-        function calculateLAVI() {
-            const laVolume = parseFloat(document.getElementById("laVolume").value);
-            const bsa = parseFloat(document.getElementById("bsa_lavi").value);
-
-            if (isNaN(laVolume) || isNaN(bsa)) {
-                alert("Please enter valid numbers for LA Volume and BSA.");
-                return;
-            }
-
-            const lavi = laVolume / bsa;
-            document.getElementById("lavi").textContent = lavi.toFixed(2);
-        }
-
-    </script>
+function calculateAll() {
+  calculateBSA();
+  calculateLVMassAndRWT();
+  calculateTeichholz();
+  calculateLAVI();
+}
+</script>
 
 </body>
 </html>
