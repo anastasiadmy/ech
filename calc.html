@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cardiac Calculations</title>
+<style>
+body {
+  font-family: sans-serif;
+}
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+input[type="number"] {
+  width: 100px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+button {
+  padding: 8px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+#results {
+  margin-top: 20px;
+}
+.calculator-section {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.calculator-section h2 {
+  margin-top: 0;
+}
+</style>
+</head>
+<body>
+
+<h1>Cardiac Calculations</h1>
+
+<div class="calculator-section">
+  <h2>BSA Calculator</h2>
+  <label for="height">Height (cm):</label>
+  <input type="number" id="height" value="0">
+  <label for="weight">Weight (kg):</label>
+  <input type="number" id="weight" value="0">
+  <button onclick="calculateBSA()">Calculate BSA</button>
+  <div id="bsa-results">
+    <p>BSA (m²): <span id="bsa"></span></p>
+  </div>
+</div>
+
+<div class="calculator-section">
+  <h2>LV Mass &amp; RWT Calculator</h2>
+  <label for="ivsd">IVSD (cm):</label>
+  <input type="number" id="ivsd" value="0">
+  <label for="lvedd2">LVEDD (cm):</label>
+  <input type="number" id="lvedd2" value="0">
+  <label for="pwtd">PWTD (cm):</label>
+  <input type="number" id="pwtd" value="0">
+  <button onclick="calculateLV()">Calculate LV Mass &amp; RWT</button>
+  <div id="lv-results">
+    <p>LV Mass (g): <span id="lvmass"></span></p>
+    <p>LV Mass Index (g/m²): <span id="lvmi"></span></p>
+    <p>RWT: <span id="rwt"></span></p>
+  </div>
+</div>
+
+<div class="calculator-section">
+  <h2>ESV, EDV, EF Calculator (Teichholz)</h2>
+  <label for="lvedd3">LVEDD (cm):</label>
+  <input type="number" id="lvedd3" value="0">
+  <label for="lvesd3">LVESD (cm):</label>
+  <input type="number" id="lvesd3" value="0">
+  <button onclick="calculateVEF()">Calculate ESV, EDV, EF</button>
+  <div id="vef-results">
+    <p>EDV (ml): <span id="edv"></span></p>
+    <p>ESV (ml): <span id="esv"></span></p>
+    <p>EF (%): <span id="ef"></span></p>
+  </div>
+</div>
+
+<div class="calculator-section">
+  <h2>LAVI Calculator</h2>
+  <label for="lavolume">LA Volume (ml):</label>
+  <input type="number" id="lavolume" value="0">
+  <button onclick="calculateLAVI()">Calculate LAVI</button>
+  <div id="lavi-results">
+    <p>LAVI (ml/m²): <span id="lavi"></span></p>
+  </div>
+</div>
+
+
+<script>
+function calculateBSA() {
+  const height = parseFloat(document.getElementById("height").value);
+  const weight = parseFloat(document.getElementById("weight").value);
+
+  if (isNaN(height) || isNaN(weight)) {
+    alert("Please enter valid numbers for height and weight.");
+    return;
+  }
+
+  const bsa = Math.sqrt((height * weight) / 3600); // Mosteller formula
+  document.getElementById("bsa").textContent = bsa.toFixed(2);
+}
+
+function calculateLV() {
+  const ivsd = parseFloat(document.getElementById("ivsd").value);
+  const lvedd = parseFloat(document.getElementById("lvedd2").value);
+  const pwtd = parseFloat(document.getElementById("pwtd").value);
+  const bsa = parseFloat(document.getElementById("bsa").textContent); // Get BSA
+
+    if (isNaN(ivsd) || isNaN(lvedd) || isNaN(pwtd) ) {
+        alert("Please enter valid numbers for LV measurements.");
+        return;
+    }
+
+
+  const lvmass = 0.8 * (1.04 * ((ivsd + lvedd + pwtd)**3 - lvedd**3)) + 0.6;
+  const lvmi = lvmass / bsa;
+  const rwt = (2 * pwtd) / lvedd;
+
+  document.getElementById("lvmass").textContent = lvmass.toFixed(2);
+  document.getElementById("lvmi").textContent = lvmi.toFixed(2);
+  document.getElementById("rwt").textContent = rwt.toFixed(2);
+}
+
+function calculateVEF() {
+  const lvedd = parseFloat(document.getElementById("lvedd3").value);
+  const lvesd = parseFloat(document.getElementById("lvesd3").value);
+
+    if (isNaN(lvedd) || isNaN(lvesd)) {
+        alert("Please enter valid numbers for LVEDD and LVESD.");
+        return;
+    }
+
+  const edv = (7 / (2.4 + lvedd)) * lvedd**3;
+  const esv = (7 / (2.4 + lvesd)) * lvesd**3;
+  const ef = ((edv - esv) / edv) * 100;
+
+  document.getElementById("edv").textContent = edv.toFixed(2);
+  document.getElementById("esv").textContent = esv.toFixed(2);
+  document.getElementById("ef").textContent = ef.toFixed(2);
+}
+
+function calculateLAVI() {
+  const lavolume = parseFloat(document.getElementById("lavolume").value);
+  const bsa = parseFloat(document.getElementById("bsa").textContent); // Get BSA
+
+    if (isNaN(lavolume)) {
+        alert("Please enter valid numbers for LA Volume.");
+        return;
+    }
+
+  const lavi = lavolume / bsa;
+  document.getElementById("lavi").textContent = lavi.toFixed(2);
+}
+</script>
+
+</body>
+</html>
