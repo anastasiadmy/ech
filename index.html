@@ -18,10 +18,10 @@ label {
   margin-bottom: 5px;
 }
 input[type="number"] {
-  width: 100%; /* Make input fields responsive */
+  width: 100%;
   padding: 5px;
   margin-bottom: 10px;
-  box-sizing: border-box; /* Include padding in width */
+  box-sizing: border-box;
 }
 button {
   padding: 8px 15px;
@@ -35,16 +35,15 @@ button {
   margin-top: 20px;
 }
 
-/* Responsive Styles */
-@media (min-width: 768px) { /* Adjust breakpoint as needed */
+@media (min-width: 768px) {
   .calculator {
-    width: 50%; /* Make calculators wider on larger screens */
-    float: left; /* Arrange calculators side by side */
+    width: 45%; /* Adjust as needed for side-by-side layout */
+    float: left;
     margin-right: 20px;
   }
-  input[type="number"] {
-      width: 150px;
-  }
+    input[type="number"] {
+        width: 150px;
+    }
 }
 </style>
 </head>
@@ -62,7 +61,7 @@ button {
 </div>
 
 <div class="calculator">
-  <h2>LV Mass & RWT Calculator</h2>
+  <h2>LV Mass & RWT</h2>
   <label for="ivs">IVS (mm):</label>
   <input type="number" id="ivs" >
   <label for="lvedd_lv">LVEDD (mm):</label>
@@ -80,18 +79,26 @@ button {
   <input type="number" id="lvedd_teich" >
   <label for="lvesd_teich">LVESD (mm):</label>
   <input type="number" id="lvesd_teich" >
-  <p>EDV (ml): <span id="edv"></span></p>
+  <p>EDV (ml): <span id="edv_teich"></span></p>
   <p>ESV (ml): <span id="esv_teich"></span></p>
   <p>EF (%): <span id="ef_teich"></span></p>
 </div>
 
 <div class="calculator">
-    <h2>LAVI Calculator</h2>
-    <label for="la_volume">LA Volume (ml):</label>
-    <input type="number" id="la_volume" >
-    <p>LAVI (ml/m²): <span id="lavi"></span></p>
+  <h2>Ejection Fraction (Simpson's)</h2>
+  <label for="edv_simpson">EDV (ml):</label>
+  <input type="number" id="edv_simpson" >
+  <label for="esv_simpson">ESV (ml):</label>
+  <input type="number" id="esv_simpson" >
+  <p>EF (%): <span id="ef_simpson"></span></p>
 </div>
 
+<div class="calculator">
+  <h2>LAVI</h2>
+  <label for="la_volume">LA Volume (ml):</label>
+  <input type="number" id="la_volume" >
+  <p>LAVI (ml/m²): <span id="lavi"></span></p>
+</div>
 
 <button onclick="calculateAll()">Calculate All</button>
 
@@ -99,55 +106,65 @@ button {
 function calculateBSA() {
   const height = parseFloat(document.getElementById("height").value);
   const weight = parseFloat(document.getElementById("weight").value);
-  if (isNaN(height) || isNaN(weight)) return; // Don't calculate if inputs are invalid.
-  const bsa = Math.sqrt((height * weight) / 3600); // Mosteller formula
+  if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) return; // Basic input validation
+  const bsa = Math.sqrt((height * weight) / 3600);
   document.getElementById("bsa").textContent = bsa.toFixed(2);
-  return bsa; // Return the calculated BSA
+  return bsa;
 }
 
 function calculateLVMassAndRWT() {
   const ivs = parseFloat(document.getElementById("ivs").value);
   const lvedd = parseFloat(document.getElementById("lvedd_lv").value);
   const pw = parseFloat(document.getElementById("pw").value);
-  if (isNaN(ivs) || isNaN(lvedd) || isNaN(pw)) return;
+    if (isNaN(ivs) || isNaN(lvedd) || isNaN(pw) || ivs <= 0 || lvedd <= 0 || pw <= 0) return;
 
   const lvmass = 0.8 * 1.04 * ((ivs + lvedd + pw)**3 - lvedd**3);
-  const lvmassindex = lvmass / calculateBSA(); // Use calculated BSA
+  const bsa = calculateBSA();
+  const lvmassindex = bsa ? lvmass / bsa : ""; // Check if BSA is calculated
   const rwt = (2 * pw) / lvedd;
 
   document.getElementById("lvmass").textContent = lvmass.toFixed(2);
-  document.getElementById("lvmassindex").textContent = lvmassindex ? lvmassindex.toFixed(2) : ""; // Handle potential division by zero
+  document.getElementById("lvmassindex").textContent = lvmassindex ? lvmassindex.toFixed(2) : "";
   document.getElementById("rwt").textContent = rwt.toFixed(2);
 }
 
 function calculateTeichholz() {
-    const lvedd = parseFloat(document.getElementById("lvedd_teich").value);
-    const lvesd = parseFloat(document.getElementById("lvesd_teich").value);
-    if (isNaN(lvedd) || isNaN(lvesd)) return;
+  const lvedd = parseFloat(document.getElementById("lvedd_teich").value);
+  const lvesd = parseFloat(document.getElementById("lvesd_teich").value);
+    if (isNaN(lvedd) || isNaN(lvesd) || lvedd <= 0 || lvesd <= 0) return;
 
-    const edv = (7.0 / (2.4 + lvedd)) * lvedd * lvedd * lvedd;
-    const esv = (7.0 / (2.4 + lvesd)) * lvesd * lvesd * lvesd;
-    const ef = ((edv - esv) / edv) * 100;
+  const edv = (7.0 / (2.4 + lvedd)) * lvedd**3;
+  const esv = (7.0 / (2.4 + lvesd)) * lvesd**3;
+  const ef = ((edv - esv) / edv) * 100;
 
-    document.getElementById("edv").textContent = edv.toFixed(2);
-    document.getElementById("esv_teich").textContent = esv.toFixed(2);
-    document.getElementById("ef_teich").textContent = ef.toFixed(2);
+  document.getElementById("edv_teich").textContent = edv.toFixed(2);
+  document.getElementById("esv_teich").textContent = esv.toFixed(2);
+  document.getElementById("ef_teich").textContent = ef.toFixed(2);
+}
+
+function calculateSimpsonEF() {
+  const edv = parseFloat(document.getElementById("edv_simpson").value);
+  const esv = parseFloat(document.getElementById("esv_simpson").value);
+    if (isNaN(edv) || isNaN(esv) || edv <= 0 || esv <= 0) return;
+
+  const ef = ((edv - esv) / edv) * 100;
+  document.getElementById("ef_simpson").textContent = ef.toFixed(2);
 }
 
 function calculateLAVI() {
-    const laVolume = parseFloat(document.getElementById("la_volume").value);
-    const bsa = calculateBSA(); // Use the calculated BSA
-    if (isNaN(laVolume) || !bsa) return;
+  const laVolume = parseFloat(document.getElementById("la_volume").value);
+  const bsa = calculateBSA();
+    if (isNaN(laVolume) || laVolume <= 0 || !bsa) return;
 
-    const lavi = laVolume / bsa;
-    document.getElementById("lavi").textContent = lavi.toFixed(2);
+  const lavi = laVolume / bsa;
+  document.getElementById("lavi").textContent = lavi.toFixed(2);
 }
-
 
 function calculateAll() {
   calculateBSA();
   calculateLVMassAndRWT();
   calculateTeichholz();
+  calculateSimpsonEF();
   calculateLAVI();
 }
 </script>
