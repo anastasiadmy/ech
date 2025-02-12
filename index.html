@@ -171,3 +171,201 @@ function calculateAll() {
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echocardiography Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #calculator {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 400px; /* Adjust width as needed */
+            margin-bottom: 20px; /* Add spacing between calculators */
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 400px) {
+            #calculator {
+                width: 95%;
+                margin: 10px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Echocardiography Calculator</h1>
+
+    <div id="calculator">
+        <h2>PISA МК і ТК недостатність</h2>
+        <label for="radial_distance">Radius(cm):</label>
+        <input type="number" id="radial_distance" step="0.1">
+
+        <label for="aliasing_velocity">Найквіст Aliasing Velocity (cm/s):</label>
+        <input type="number" id="aliasing_velocity" step="0.1">
+
+        <label for="peak_velocity">Peak Velocity of Mitral Regurgitant Jet (CW на МК/ТК) (cm/s):</label>
+        <input type="number" id="peak_velocity" step="0.1">
+
+        <label for="vti">VTI of Mitral Regurgitant Jet (cm):</label>
+        <input type="number" id="vti" step="0.1">
+
+        <button onclick="calculatePISA()">Calculate</button>
+
+        <div id="pisa_result" class="result"></div>
+    </div>
+
+    <div id="calculator">
+        <h2>AС (Continuity Equation)</h2>
+        <label for="lvot_diameter">LVOT Diameter (cm):</label>
+        <input type="number" id="lvot_diameter" step="0.1">
+
+        <label for="lvot_vti">LVOT VTI (PW) (cm):</label>
+        <input type="number" id="lvot_vti" step="0.1">
+
+        <label for="av_vti">Aortic Valve VTI (CW) (cm):</label>
+        <input type="number" id="av_vti" step="0.1">
+
+        <button onclick="calculateAVA()">Calculate</button>
+
+        <div id="ava_result" class="result"></div>
+    </div>
+
+
+    <script>
+        function calculatePISA() {
+            // ... (PISA calculation code - same as before) ...
+            const radialDistance = parseFloat(document.getElementById("radial_distance").value);
+            const aliasingVelocity = parseFloat(document.getElementById("aliasing_velocity").value);
+            const peakVelocity = parseFloat(document.getElementById("peak_velocity").value);
+            const vti = parseFloat(document.getElementById("vti").value);
+
+            if (isNaN(radialDistance) || isNaN(aliasingVelocity) || isNaN(peakVelocity) || isNaN(vti) ||
+                radialDistance < 0 || aliasingVelocity < 0 || peakVelocity < 0 || vti < 0) {
+                document.getElementById("pisa_result").textContent = "Please enter valid non-negative numbers.";
+                return;
+            }
+
+            // Calculations
+            const eroArea = (2 * Math.PI * Math.pow(radialDistance, 2) * aliasingVelocity) / peakVelocity; // Effective Regurgitant Orifice Area (cm^2)
+            const regurgitantVolume = eroArea * vti; // Regurgitant Volume (mL)
+            const flowRate = regurgitantVolume / (vti/peakVelocity) ; //Volume Flow Rate (ml/s)
+
+            document.getElementById("pisa_result").innerHTML = `
+                Effective Regurgitant Orifice Area: ${eroArea.toFixed(2)} cm²<br>
+                Regurgitant Volume: ${regurgitantVolume.toFixed(2)} mL <br>
+                Volume Flow Rate: ${flowRate.toFixed(2)} mL/s
+            `;
+        }
+
+
+        function calculateAVA() {
+            const lvotDiameter = parseFloat(document.getElementById("lvot_diameter").value);
+            const lvotVti = parseFloat(document.getElementById("lvot_vti").value);
+            const avVti = parseFloat(document.getElementById("av_vti").value);
+
+            if (isNaN(lvotDiameter) || isNaN(lvotVti) || isNaN(avVti) ||
+                lvotDiameter < 0 || lvotVti < 0 || avVti < 0) {
+                document.getElementById("ava_result").textContent = "Please enter valid non-negative numbers.";
+                return;
+            }
+
+            // Calculate LVOT Area
+            const lvotArea = Math.PI * Math.pow(lvotDiameter / 2, 2);
+
+            // Calculate Aortic Valve Area (AVA) using the continuity equation
+            const ava = (lvotArea * lvotVti) / avVti;
+
+            document.getElementById("ava_result").textContent = "Aortic Valve Area: " + ava.toFixed(2) + " cm²";
+        }
+    </script>
+
+
+    <div id="calculator">
+        <h2>Mitral Valve Area Calculator (Continuity Equation)</h2>
+        <label for="lvot_diameter_mva">LVOT Diameter (cm):</label>
+        <input type="number" id="lvot_diameter_mva" step="0.1">
+
+        <label for="lvot_vti_mva">LVOT VTI (cm):</label>
+        <input type="number" id="lvot_vti_mva" step="0.1">
+
+        <label for="mv_vti">Mitral Valve VTI (cm):</label>
+        <input type="number" id="mv_vti" step="0.1">
+
+        <button onclick="calculateMVA()">Calculate</button>
+
+        <div id="mva_result" class="result"></div>
+    </div>
+
+     <div id="calculator">
+        <h2>MС по РНТ CW + mean grad(+ планіметрія в PSAX)</h2>
+        <label for="pht">Pressure Half-Time (ms):</label>
+        <input type="number" id="pht" step="0.1">
+
+        <button onclick="calculateMVA_PHT()">Calculate</button>
+
+        <div id="mva_pht_result" class="result"></div>
+    </div>
+
+    <script>
+        // ... (PISA and AVA calculation functions - same as before) ...
+
+        function calculateMVA() {
+            const lvotDiameter = parseFloat(document.getElementById("lvot_diameter_mva").value);
+            const lvotVti = parseFloat(document.getElementById("lvot_vti_mva").value);
+            const mvVti = parseFloat(document.getElementById("mv_vti").value);
+
+            if (isNaN(lvotDiameter) || isNaN(lvotVti) || isNaN(mvVti) ||
+                lvotDiameter < 0 || lvotVti < 0 || mvVti < 0) {
+                document.getElementById("mva_result").textContent = "Please enter valid non-negative numbers.";
+                return;
+            }
+
+            const lvotArea = Math.PI * Math.pow(lvotDiameter / 2, 2);
+            const mva = (lvotArea * lvotVti) / mvVti;
+
+            document.getElementById("mva_result").textContent = "Mitral Valve Area (Continuity): " + mva.toFixed(2) + " cm²";
+        }
+
+        function calculateMVA_PHT() {
+            const pht = parseFloat(document.getElementById("pht").value);
+
+            if (isNaN(pht) || pht < 0) {
+                document.getElementById("mva_pht_result").textContent = "Please enter a valid non-negative number.";
+                return;
+            }
+
+            const mva = 220 / pht; //MVA=220/PHT
+
+            document.getElementById("mva_pht_result").textContent = "Mitral Valve Area (PHT): " + mva.toFixed(2) + " cm²";
+        }
+    </script>
+
+</body>
+</html>
